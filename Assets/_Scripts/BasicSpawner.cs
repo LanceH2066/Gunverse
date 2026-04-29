@@ -4,13 +4,14 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkPrefabRef _playerPrefab;
     private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
     private NetworkRunner _runner;
-
+    private InputAction _moveAction;
     async void StartGame(GameMode mode)
     {
         // Create the Fusion runner and let it know that we will be providing user input
@@ -50,7 +51,22 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
             }
         }
     }
-
+    private void Awake()
+    {
+        _moveAction = new InputAction("Move", InputActionType.Value,
+            binding: "<Gamepad>/leftStick");
+        _moveAction.AddCompositeBinding("2DVector")
+            .With("Up",    "<Keyboard>/w")
+            .With("Down",  "<Keyboard>/s")
+            .With("Left",  "<Keyboard>/a")
+            .With("Right", "<Keyboard>/d");
+        _moveAction.Enable();
+    }
+    private void OnDestroy()
+    {
+        _moveAction.Disable();
+        _moveAction.Dispose();
+    }
     void INetworkRunnerCallbacks.OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         if (runner.IsServer)
@@ -71,7 +87,15 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
             _spawnedCharacters.Remove(player);
         }
     }   
-    void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input) { }
+    void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
+    {
+        var data = new NetworkInputData();
+
+        Vector2 move = _moveAction.ReadValue<Vector2>();
+        data.Direction = new Vector3(move.x, 0f, move.y);
+        
+        input.Set(data);
+    }
     void INetworkRunnerCallbacks.OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     void INetworkRunnerCallbacks.OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     void INetworkRunnerCallbacks.OnConnectedToServer(NetworkRunner runner) { }

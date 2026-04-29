@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7998876613631224866}
   - component: {fileID: 457156437756327810}
-  - component: {fileID: 5000009355052278966}
-  - component: {fileID: 3328413153849104323}
+  - component: {fileID: 7590345493369846700}
+  - component: {fileID: 8169209664579337833}
+  - component: {fileID: 4213830852278391208}
   m_Layer: 0
   m_Name: PlayerPrefab
   m_TagString: Untagged
@@ -52,9 +53,10 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 3328413153849104323}
+  - {fileID: 8169209664579337833}
+  - {fileID: 4213830852278391208}
   ForceRemoteRenderTimeframe: 0
---- !u!143 &5000009355052278966
+--- !u!143 &7590345493369846700
 CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -79,7 +81,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3328413153849104323
+--- !u!114 &8169209664579337833
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -98,6 +100,18 @@ MonoBehaviour:
   braking: 10
   maxSpeed: 2
   rotationSpeed: 15
+--- !u!114 &4213830852278391208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2700716441973580870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43b073473fde2fb4f90627f6709c22d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player
 --- !u!1 &3243648228966637858
 GameObject:
   m_ObjectHideFlags: 0
