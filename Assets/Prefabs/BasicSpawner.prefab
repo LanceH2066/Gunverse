@@ -44,3 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5e2bc1f354c4e409619ce54306b3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkManager
+  _playerPrefab:
+    RawGuidValue: 3c10d5929bba03946bc9566190b7ea2c
