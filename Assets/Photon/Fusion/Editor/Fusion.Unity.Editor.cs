@@ -617,7 +617,9 @@ namespace Fusion.Editor {
 
     const int ThumbnailWidth = 20;
 
-    protected override void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label) {
+        [Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        protected override void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label) {
 
       using (new FusionEditorGUI.PropertyScopeWithPrefixLabel(position, label, property, out position)) {
         
@@ -634,6 +636,7 @@ namespace Fusion.Editor {
         } 
       }
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
     public static Rect DrawThumbnailPrefix(Rect position, INetworkPrefabSource source) {
       if (source == null) {
@@ -656,8 +659,9 @@ namespace Fusion.Editor {
       pos.width = ThumbnailWidth;
       FusionEditorGUI.DrawTypeThumbnail(pos, source.GetType(), "NetworkPrefabSource", source.Description);
     }
-    
-    public static INetworkPrefabSource DrawSourceObjectPicker(Rect position, GUIContent label, INetworkPrefabSource source) {
+
+        [Obsolete]
+        public static INetworkPrefabSource DrawSourceObjectPicker(Rect position, GUIContent label, INetworkPrefabSource source) {
       NetworkProjectConfigUtilities.TryGetPrefabEditorInstance(source?.AssetGuid ?? default, out var target);
       
       EditorGUI.BeginChangeCheck();
@@ -1812,7 +1816,8 @@ namespace Fusion.Editor {
         return go.AddComponent<T>();
     }
 
-    public static GameObject EnsureComponentsExistInScene(string preferredGameObjectName, params Type[] components) {
+        [Obsolete]
+        public static GameObject EnsureComponentsExistInScene(string preferredGameObjectName, params Type[] components) {
 
       GameObject go = null;
 
@@ -1830,7 +1835,8 @@ namespace Fusion.Editor {
       return go;
     }
 
-    public static T EnsureExistsInScene<T>(string preferredGameObjectName = null, GameObject onThisObject = null, params Type[] otherRequiredComponents) where T : Component {
+        [Obsolete]
+        public static T EnsureExistsInScene<T>(string preferredGameObjectName = null, GameObject onThisObject = null, params Type[] otherRequiredComponents) where T : Component {
 
       if (preferredGameObjectName == null)
         preferredGameObjectName = typeof(T).Name;
@@ -2027,8 +2033,9 @@ namespace Fusion.Editor {
 
   [CustomEditor(typeof(FusionBootstrap))]
   public class FusionBootstrapEditor : BehaviourEditor {
-
-    public override void OnInspectorGUI() {
+        [System.Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        public override void OnInspectorGUI() {
       base.OnInspectorGUI();
 
       if (Application.isPlaying)
@@ -2051,6 +2058,7 @@ namespace Fusion.Editor {
         }
       }
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
   }
 }
 
@@ -2172,11 +2180,12 @@ namespace Fusion.Editor {
       AssetName = hierarchyProperty.name;
       IsMainAsset = hierarchyProperty.isMainRepresentation;
     }
-    
-    /// <summary>
-    /// Create a new instance of <see cref="NetworkAssetSourceFactoryContext"/>.
-    /// </summary>
-    public NetworkAssetSourceFactoryContext(UnityEngine.Object obj) {
+
+        /// <summary>
+        /// Create a new instance of <see cref="NetworkAssetSourceFactoryContext"/>.
+        /// </summary>
+        [System.Obsolete]
+        public NetworkAssetSourceFactoryContext(UnityEngine.Object obj) {
       if (!obj) {
         throw new System.ArgumentNullException(nameof(obj));
       }
@@ -3249,7 +3258,8 @@ namespace Fusion.Editor {
     private Editor            _lastEditor;
     private List<ButtonEntry> _buttons;
 
-    public void Draw(Editor editor) {
+        [Obsolete]
+        public void Draw(Editor editor) {
       var targets    = editor.targets;
 
       if (_lastEditor != editor) {
@@ -4706,19 +4716,23 @@ namespace Fusion.Editor {
       FusionEditorGUI.InjectScriptHeaderDrawer(this);
     }
 
-    /// <summary>
-    /// Draws the editor buttons.
-    /// </summary>
-    protected void DrawEditorButtons() {
+        /// <summary>
+        /// Draws the editor buttons.
+        /// </summary>
+        [System.Obsolete]
+        protected void DrawEditorButtons() {
       _buttonDrawer.Draw(this);
     }
-    
-    /// <inheritdoc/>
-    public override void OnInspectorGUI() {
+
+        /// <inheritdoc/>
+        [System.Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        public override void OnInspectorGUI() {
       PrepareOnInspectorGUI();
       base.OnInspectorGUI();
       DrawEditorButtons();
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
     /// <summary>
     /// Draws the script property field.
@@ -7497,7 +7511,8 @@ namespace Fusion.Editor {
         return SerializedProperty.DataEquals(x, y);
       }
 
-      public int GetHashCode(SerializedProperty p) {
+            [Obsolete]
+            public int GetHashCode(SerializedProperty p) {
         bool enterChildren;
         var  isFirst  = true;
         var  hashCode = 0;
@@ -9898,8 +9913,9 @@ namespace Fusion.Editor {
   internal abstract partial class DoIfAttributeDrawer : DecoratingPropertyAttributeDrawer, INonApplicableOnArrayElements {
     
     private static Dictionary<(Type, string), Func<object, object>> _cachedGetters = new Dictionary<(Type, string), Func<object, object>>();
-    
-    internal static bool CheckDraw(DoIfAttributeBase doIf, SerializedObject serializedObject) {
+
+        [Obsolete]
+        internal static bool CheckDraw(DoIfAttributeBase doIf, SerializedObject serializedObject) {
       var compareProperty = serializedObject.FindProperty(doIf.ConditionMember);
 
       if (compareProperty != null) {
@@ -9908,8 +9924,9 @@ namespace Fusion.Editor {
       
       return CheckGetter(doIf, serializedObject, 0, string.Empty) == true;
     }
-    
-    internal static bool CheckDraw(DoIfAttributeBase doIf, SerializedProperty property) {
+
+        [Obsolete]
+        internal static bool CheckDraw(DoIfAttributeBase doIf, SerializedProperty property) {
       var compareProperty = property.depth < 0 ? property.FindPropertyRelative(doIf.ConditionMember) : property.FindPropertyRelativeToParent(doIf.ConditionMember);
 
       if (compareProperty != null) {
@@ -9919,7 +9936,8 @@ namespace Fusion.Editor {
       return CheckGetter(doIf, property.serializedObject, property.depth, property.propertyPath) == true;
     }
 
-    private static bool CheckProperty(DoIfAttributeBase doIf, SerializedProperty compareProperty) {
+        [Obsolete]
+        private static bool CheckProperty(DoIfAttributeBase doIf, SerializedProperty compareProperty) {
       switch (compareProperty.propertyType) {
         case SerializedPropertyType.Boolean:
         case SerializedPropertyType.Integer:
@@ -10063,15 +10081,20 @@ namespace Fusion.Editor {
   internal partial class DrawIfAttributeDrawer : DoIfAttributeDrawer {
     public DrawIfAttribute Attribute => (DrawIfAttribute)attribute;
 
-    protected override float GetPropertyHeightInternal(SerializedProperty property, GUIContent label) {
+        [System.Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        protected override float GetPropertyHeightInternal(SerializedProperty property, GUIContent label) {
       if (Attribute.Mode == DrawIfMode.ReadOnly || CheckDraw(Attribute, property)) {
         return base.GetPropertyHeightInternal(property, label);
       }
       
       return -EditorGUIUtility.standardVerticalSpacing;
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
-    protected override void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label) {
+        [System.Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        protected override void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label) {
       var readOnly = Attribute.Mode == DrawIfMode.ReadOnly;
       var draw     = CheckDraw(Attribute, property);
 
@@ -10083,6 +10106,7 @@ namespace Fusion.Editor {
         EditorGUI.EndDisabledGroup();
       }
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
   }
   
 
@@ -10836,7 +10860,9 @@ namespace Fusion.Editor {
       }
     }
 
-    protected override float GetPropertyHeightInternal(SerializedProperty property, GUIContent label) {
+        [System.Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        protected override float GetPropertyHeightInternal(SerializedProperty property, GUIContent label) {
       var height = base.GetPropertyHeightInternal(property, label);
 
       if (IsBox) {
@@ -10848,8 +10874,11 @@ namespace Fusion.Editor {
 
       return height;
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
-    protected override void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label) {
+        [System.Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        protected override void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label) {
 
       if (!CheckDraw(Attribute, property)) {
         base.OnGUIInternal(position, property, label);
@@ -10882,6 +10911,7 @@ namespace Fusion.Editor {
         }
       }
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
     
     private float CalcBoxHeight() {
       // const float SCROLL_WIDTH     = 16f;
@@ -12158,7 +12188,8 @@ namespace Fusion.Editor {
   internal class FusionHierarchyWindowOverlay {
 
     [RuntimeInitializeOnLoadMethod]
-    public static void Initialize() {
+        [Obsolete]
+        public static void Initialize() {
       UnityEditor.EditorApplication.hierarchyWindowItemOnGUI -= HierarchyWindowOverlay;
       UnityEditor.EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowOverlay;
     }
@@ -12176,7 +12207,8 @@ namespace Fusion.Editor {
     [StaticField(StaticFieldResetMode.None)]
     private static GUIContent s_multipleInstancesContent = EditorGUIUtility.IconContent("Warning", "multiple");
 
-    private static void HierarchyWindowOverlay(int instanceId, Rect position) {
+        [Obsolete]
+        private static void HierarchyWindowOverlay(int instanceId, Rect position) {
 #if UNITY_6000_3_OR_NEWER
       var entityId = (EntityId)instanceId;
       var obj = UnityEditor.EditorUtility.EntityIdToObject(entityId);
@@ -12731,7 +12763,8 @@ namespace Fusion.Editor {
 
     [MenuItem("Tools/Fusion/Scene/Setup Networking in the Scene", false, FusionAssistants.PRIORITY_LOW + 1)]
     [MenuItem("GameObject/Fusion/Scene/Setup Networking in the Scene", false, FusionAssistants.PRIORITY + 1)]
-    public static void AddNetworkingToScene() {
+        [System.Obsolete]
+        public static void AddNetworkingToScene() {
       (FusionBootstrap nds, NetworkRunner nr) n = AddNetworkStartup();
       n.nr.gameObject.EnsureComponentExists<NetworkEvents>();
 
@@ -12739,7 +12772,8 @@ namespace Fusion.Editor {
       DirtyAndSaveScene(n.nds.gameObject.scene);
     }
 
-    public static (FusionBootstrap, NetworkRunner) AddNetworkStartup() {
+        [System.Obsolete]
+        public static (FusionBootstrap, NetworkRunner) AddNetworkStartup() {
       // Restrict to single AudioListener to disallow multiple active in shared instance mode (preventing log spam)
       HandleAudioListeners();
       
@@ -12786,7 +12820,8 @@ namespace Fusion.Editor {
 
     [MenuItem("Tools/Fusion/Scene/Setup Multi-Peer AudioListener Handling", false, FusionAssistants.PRIORITY_LOW + 1)]
     [MenuItem("GameObject/Fusion/Scene/Setup Multi-Peer AudioListener Handling", false, FusionAssistants.PRIORITY + 1)]
-    public static void HandleAudioListeners() {
+        [System.Obsolete]
+        public static void HandleAudioListeners() {
       int count = 0;
       foreach (var listener in Object.FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
         count++;
@@ -12797,7 +12832,8 @@ namespace Fusion.Editor {
     
     [MenuItem("Tools/Fusion/Scene/Setup Multi-Peer Lights Handling", false, FusionAssistants.PRIORITY_LOW + 1)]
     [MenuItem("GameObject/Fusion/Scene/Setup Multi-Peer Lights Handling", false, FusionAssistants.PRIORITY + 1)]
-    public static void HandleLights() {
+        [System.Obsolete]
+        public static void HandleLights() {
       int count = 0;
       foreach (var listener in Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
         count++;
@@ -12897,8 +12933,9 @@ namespace Fusion.Editor {
     [NonSerialized]
     int[] _buffer = Array.Empty<int>();
 
-    
-    public override void OnInspectorGUI() {
+        [Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        public override void OnInspectorGUI() {
       base.PrepareOnInspectorGUI();
 
       bool hasBeenApplied = false;
@@ -12949,6 +12986,7 @@ namespace Fusion.Editor {
       DrawNetworkObjectCheck();
       DrawEditorButtons();
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
     unsafe bool TransferBackingFields(bool backingFieldsToState) {
 
@@ -13889,7 +13927,9 @@ namespace Fusion.Editor {
       EditorGUILayout.LabelField(label, (value != null ? value.ToString() : "null"));
     }
 
-    public override void OnInspectorGUI() {
+        [Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        public override void OnInspectorGUI() {
       base.OnInspectorGUI();
 
       var runner = target as NetworkRunner;
@@ -13972,6 +14012,7 @@ namespace Fusion.Editor {
 
       }
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
   }
 }
 
@@ -13993,7 +14034,9 @@ namespace Fusion.Editor {
 
   [CustomEditor(typeof(NetworkTRSP), true)]
   public unsafe class NetworkTRSPEditor : NetworkBehaviourEditor {
-    public override void OnInspectorGUI() {
+        [System.Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        public override void OnInspectorGUI() {
       base.OnInspectorGUI();
 
       var t = (NetworkTRSP)target;
@@ -14004,6 +14047,7 @@ namespace Fusion.Editor {
         }        
       }
     }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
   }
 }
 
@@ -15118,7 +15162,8 @@ namespace Fusion.Editor {
 
     static List<NetworkRunner> reusableRunnerList = new List<NetworkRunner>();
 
-    public static NetworkRunner[] FindActiveRunners() {
+        [System.Obsolete]
+        public static NetworkRunner[] FindActiveRunners() {
       var runners = Object.FindObjectsByType<NetworkRunner>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
       reusableRunnerList.Clear();
       for (int i = 0; i < runners.Length; ++i) {
@@ -15131,7 +15176,8 @@ namespace Fusion.Editor {
       return reusableRunnerList.ToArray();
     }
 
-    public static void FindActiveRunners(List<NetworkRunner> nonalloc) {
+        [System.Obsolete]
+        public static void FindActiveRunners(List<NetworkRunner> nonalloc) {
       var runners = Object.FindObjectsByType<NetworkRunner>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
       nonalloc.Clear();
       for (int i = 0; i < runners.Length; ++i) {

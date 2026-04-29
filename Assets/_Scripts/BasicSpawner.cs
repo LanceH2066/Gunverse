@@ -9,7 +9,10 @@ using UnityEngine.InputSystem;
 public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkPrefabRef _playerPrefab;
-    private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
+    [SerializeField] private Material _skyboxMaterial;
+    [SerializeField] private Light _sunLight;
+
+    private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new();
     private NetworkRunner _runner;
 
     async void StartGame(GameMode mode)
@@ -20,9 +23,7 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
         var scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
         var sceneInfo = new NetworkSceneInfo();
         if (scene.IsValid)
-        {
             sceneInfo.AddSceneRef(scene, LoadSceneMode.Additive);
-        }
 
         await _runner.StartGame(new StartGameArgs()
         {
@@ -39,50 +40,48 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
         if (_runner == null)
         {
             if (GUI.Button(new Rect(0, 0, 200, 40), "Host"))
-            {
                 StartGame(GameMode.Host);
-            }
-
             if (GUI.Button(new Rect(0, 40, 200, 40), "Join"))
-            {
                 StartGame(GameMode.Client);
-            }
         }
         else
         {
             int y = 0;
             GUI.Label(new Rect(10, y += 20, 400, 25), $"Mode: {_runner.GameMode}");
-            GUI.Label(new Rect(10, y += 20, 400, 25), $"Players connected: {_runner.SessionInfo?.PlayerCount}");
-            GUI.Label(new Rect(10, y += 20, 400, 25), $"Spawned characters: {_spawnedCharacters.Count}");
+            GUI.Label(new Rect(10, y += 20, 400, 25), $"Players: {_runner.SessionInfo?.PlayerCount}");
+            GUI.Label(new Rect(10, y += 20, 400, 25), $"Spawned: {_spawnedCharacters.Count}");
         }
     }
 
-    void INetworkRunnerCallbacks.OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         if (runner.IsServer)
         {
-            Vector3 spawnPosition = new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 1, 0);
-            NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
-            _spawnedCharacters.Add(player, networkPlayerObject);
-            Debug.Log($"[BasicSpawner] Spawned player {player.RawEncoded} with input authority");
+            Vector3 spawnPos = new Vector3(
+                (player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 1, 0);
+            NetworkObject obj = runner.Spawn(_playerPrefab, spawnPos, Quaternion.identity, player);
+            _spawnedCharacters.Add(player, obj);
+            Debug.Log($"[BasicSpawner] Spawned player {player.RawEncoded}");
         }
     }
 
-    void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        if (_spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
+        if (_spawnedCharacters.TryGetValue(player, out NetworkObject obj))
         {
-            runner.Despawn(networkObject);
+            runner.Despawn(obj);
             _spawnedCharacters.Remove(player);
             Debug.Log($"[BasicSpawner] Despawned player {player.RawEncoded}");
         }
     }
 
-    void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
+    public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+        if (PlayerMovement.Local == null) return;
+
         var data = new NetworkInputData();
-        
-        var keyboard = UnityEngine.InputSystem.Keyboard.current;
+
+        var keyboard = Keyboard.current;
         if (keyboard != null)
         {
             Vector2 dir = Vector2.zero;
@@ -91,27 +90,43 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
             if (keyboard.aKey.isPressed) dir += Vector2.left;
             if (keyboard.dKey.isPressed) dir += Vector2.right;
             data.Direction = dir.normalized;
-            data.Sprinting = keyboard.leftShiftKey.isPressed;
-            data.Jumping = keyboard.spaceKey.isPressed;
+
+            data.Buttons.Set(InputButtons.Sprint, keyboard.leftShiftKey.isPressed);
         }
 
+        data.Yaw   = PlayerMovement.Local.LocalYaw;
+        data.Pitch = FPSCamera.Local != null ? FPSCamera.Local.LocalCameraX : 0f;
+
+        data.Buttons.Set(InputButtons.Jump, PlayerMovement.Local.JumpPending);
+
         input.Set(data);
+
+        PlayerMovement.Local.JumpPending = false;
     }
 
-    void INetworkRunnerCallbacks.OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    void INetworkRunnerCallbacks.OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { Debug.Log($"[BasicSpawner] Shutdown: {shutdownReason}"); _runner = null; }
-    void INetworkRunnerCallbacks.OnConnectedToServer(NetworkRunner runner) { Debug.Log("[BasicSpawner] Connected to server"); }
-    void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { Debug.Log($"[BasicSpawner] Disconnected: {reason}"); }
-    void INetworkRunnerCallbacks.OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
-    void INetworkRunnerCallbacks.OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { Debug.Log($"[BasicSpawner] Connect failed: {reason}"); }
-    void INetworkRunnerCallbacks.OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
-    void INetworkRunnerCallbacks.OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
-    void INetworkRunnerCallbacks.OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-    void INetworkRunnerCallbacks.OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-    void INetworkRunnerCallbacks.OnSceneLoadDone(NetworkRunner runner) { }
-    void INetworkRunnerCallbacks.OnSceneLoadStart(NetworkRunner runner) { }
-    void INetworkRunnerCallbacks.OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
-    void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
-    void INetworkRunnerCallbacks.OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
-    void INetworkRunnerCallbacks.OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
+    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { Debug.Log($"[BasicSpawner] Shutdown: {shutdownReason}"); _runner = null; }
+    public void OnConnectedToServer(NetworkRunner runner) { Debug.Log("[BasicSpawner] Connected"); }
+    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { Debug.Log($"[BasicSpawner] Disconnected: {reason}"); }
+    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
+    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { Debug.Log($"[BasicSpawner] Connect failed: {reason}"); }
+    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
+    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
+    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+    public void OnSceneLoadDone(NetworkRunner runner)
+    {
+        if (_skyboxMaterial != null)
+            RenderSettings.skybox = _skyboxMaterial;
+
+        if (_sunLight != null)
+            RenderSettings.sun = _sunLight;
+
+        DynamicGI.UpdateEnvironment();
+    }
+    public void OnSceneLoadStart(NetworkRunner runner) { }
+    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
+    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
 }

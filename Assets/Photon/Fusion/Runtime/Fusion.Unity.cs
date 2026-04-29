@@ -3740,7 +3740,8 @@ namespace Fusion {
         return x.handle == y.handle;
       }
 
-      public int GetHashCode(Scene obj) {
+            [Obsolete]
+            public int GetHashCode(Scene obj) {
         return obj.handle;
       }
     }
@@ -3881,7 +3882,8 @@ namespace Fusion {
       return false;
     }
 
-    public static string Dump(this Scene scene) {
+        [Obsolete]
+        public static string Dump(this Scene scene) {
       StringBuilder result = new StringBuilder();
 
       result.Append("[UnityScene:");

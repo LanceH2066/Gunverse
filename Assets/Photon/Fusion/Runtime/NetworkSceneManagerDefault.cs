@@ -88,9 +88,10 @@ namespace Fusion {
       SceneManager.sceneUnloaded += (s) => _allOwnedScenes.Remove(s);
     }
 
-    #region INetworkSceneManager
+        #region INetworkSceneManager
 
-    public virtual void Initialize(NetworkRunner runner) {
+        [Obsolete]
+        public virtual void Initialize(NetworkRunner runner) {
       Log.TraceSceneManager(runner, $"Initialize with {runner}");
       
 #if FUSION_ENABLE_ADDRESSABLES && !FUSION_DISABLE_ADDRESSABLES
@@ -255,12 +256,14 @@ namespace Fusion {
       }
     }
 
-    public virtual NetworkSceneAsyncOp LoadScene(SceneRef sceneRef, NetworkLoadSceneParameters parameters) {
+        [Obsolete]
+        public virtual NetworkSceneAsyncOp LoadScene(SceneRef sceneRef, NetworkLoadSceneParameters parameters) {
       Log.TraceSceneManager(Runner, $"Load scene {sceneRef} called with parameters: {parameters}");
       return NetworkSceneAsyncOp.FromCoroutine(sceneRef, StartTracedCoroutine(LoadSceneCoroutine(sceneRef, parameters)));
     }
-    
-    public virtual NetworkSceneAsyncOp UnloadScene(SceneRef sceneRef) {
+
+        [Obsolete]
+        public virtual NetworkSceneAsyncOp UnloadScene(SceneRef sceneRef) {
       Log.TraceSceneManager(Runner, $"Unload scene {sceneRef} called");
       return NetworkSceneAsyncOp.FromCoroutine(sceneRef, StartTracedCoroutine(UnloadSceneCoroutine(sceneRef)));
     }
@@ -314,9 +317,10 @@ namespace Fusion {
       return false;
     }
 
-    #endregion
+        #endregion
 
-    protected virtual IEnumerator LoadSceneCoroutine(SceneRef sceneRef, NetworkLoadSceneParameters sceneParams) {
+        [Obsolete]
+        protected virtual IEnumerator LoadSceneCoroutine(SceneRef sceneRef, NetworkLoadSceneParameters sceneParams) {
       Runner.InvokeSceneLoadStart(sceneRef);
 
       Scene scene = default;
@@ -496,7 +500,8 @@ namespace Fusion {
       yield return StartCoroutine(OnSceneLoaded(sceneRef, scene, sceneParams));
     }
 
-    protected virtual IEnumerator UnloadSceneCoroutine(SceneRef sceneRef) {
+        [Obsolete]
+        protected virtual IEnumerator UnloadSceneCoroutine(SceneRef sceneRef) {
       Log.TraceSceneManager(Runner, $"UnloadSceneCoroutine called for {sceneRef}");
 
       using (MakeLoadingScope()) {
@@ -575,7 +580,8 @@ namespace Fusion {
       }
     }
 
-    protected virtual IEnumerator OnSceneLoaded(SceneRef sceneRef, Scene scene, NetworkLoadSceneParameters sceneParams) {
+        [Obsolete]
+        protected virtual IEnumerator OnSceneLoaded(SceneRef sceneRef, Scene scene, NetworkLoadSceneParameters sceneParams) {
       Log.TraceSceneManager(Runner, $"Finished loading, starting processing {scene.Dump()} for {sceneRef}");
 
       var sceneObjects = scene.GetComponents<NetworkObject>(includeInactive: true, out var rootObjects);
@@ -627,7 +633,8 @@ namespace Fusion {
       Log.TraceSceneManager(Runner, $"Loading scene progress {sceneRef} ({progress:P2})");
     }
 
-    private void DestroyAllRuntimeSpawnedObjectsInScene(Scene scene, SceneRef sceneRef) {
+        [Obsolete]
+        private void DestroyAllRuntimeSpawnedObjectsInScene(Scene scene, SceneRef sceneRef) {
       Log.TraceSceneManager(Runner, $"destroying runtime spawned NetworkObjects in scene {scene.Dump()} for {sceneRef}");
       foreach (var networkObject in Runner.GetAllNetworkObjects()) {
         // This exists to ensure all object meta is destroyed when unloading the scene to prevent objects from getting despawned and spawned again repeadetly on scene unload.
@@ -701,7 +708,8 @@ namespace Fusion {
       return new LoadingScope(this);
     }
 
-    protected void MarkSceneAsOwned(SceneRef sceneRef, Scene scene) {
+        [Obsolete]
+        protected void MarkSceneAsOwned(SceneRef sceneRef, Scene scene) {
       if (_allOwnedScenes.TryGetValue(scene, out var manager)) {
         Log.Warn(Runner, $"Scene {scene.Dump()} (for {sceneRef}) already owned by {manager}");
       } else {

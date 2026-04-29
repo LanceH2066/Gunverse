@@ -193,7 +193,8 @@ namespace Fusion {
 #endif
 
 
-    protected virtual void Start() {
+        [Obsolete]
+        protected virtual void Start() {
 
       if (_initialScenePath == null) {
         if (string.IsNullOrEmpty(InitialScenePath)) {

@@ -46,6 +46,7 @@ public class MouseLook : MonoBehaviour
         if (mouse != null)
         {
             mouseDelta = new Vector2(mouse.delta.x.ReadValue(), mouse.delta.y.ReadValue());
+            
         }
         else
         {

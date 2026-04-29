@@ -210,7 +210,9 @@ namespace Fusion.Editor {
         }
       }
 
-      protected override GenericMenu CreateContextMenu(GridItem item, TreeView treeView) {
+            [Obsolete]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+            protected override GenericMenu CreateContextMenu(GridItem item, TreeView treeView) {
         
         var menu = new GenericMenu();
 
@@ -298,6 +300,7 @@ namespace Fusion.Editor {
 
         return menu;
       }
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
     }
   }
 }
