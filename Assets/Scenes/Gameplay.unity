@@ -383,6 +383,28 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &455864176 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3692140440236032739, guid: e4d3af889dff5074384f48e9f863c040, type: 3}
+  m_PrefabInstance: {fileID: 1709867394053806243}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &455864179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455864176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b5a1ff9dee264bfd829a39e6542dcbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Addons.Physics::Fusion.Addons.Physics.RunnerSimulatePhysics3D
+  _physicsAuthority: 2
+  _physicsTiming: 3
+  ClientPhysicsSimulation: 0
+  DeltaTimeMultiplier: 1
+  SetUnityFixedTimestep: 0
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -539,7 +561,7 @@ Transform:
   m_GameObject: {fileID: 1216802596}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.27, z: 0}
   m_LocalScale: {x: 50, y: 50, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -600,7 +622,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3692140440236032739, guid: e4d3af889dff5074384f48e9f863c040, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 455864179}
   m_SourcePrefab: {fileID: 100100000, guid: e4d3af889dff5074384f48e9f863c040, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
