@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 // it lives in back to being the active scene, restoring skybox and lighting.
 public class SceneLightingAnchor : MonoBehaviour
 {
-    void Awake()
+    void Start()
     {
         Scene myScene = gameObject.scene;
         if (SceneManager.GetActiveScene() != myScene)

@@ -27,7 +27,15 @@ public class FPSCamera : NetworkBehaviour
         {
             Local = this;
 
-            var vcam = FindAnyObjectByType<CinemachineCamera>();
+            // Search only in the same scene as this player object
+            CinemachineCamera vcam = null;
+            var roots = gameObject.scene.GetRootGameObjects();
+            foreach (var root in roots)
+            {
+                vcam = root.GetComponentInChildren<CinemachineCamera>();
+                if (vcam != null) break;
+            }
+
             if (vcam != null && _cameraTarget != null)
             {
                 vcam.Follow = _cameraTarget;
