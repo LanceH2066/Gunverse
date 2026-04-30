@@ -9,11 +9,14 @@ using UnityEngine.InputSystem;
 public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkPrefabRef _playerPrefab;
-    [SerializeField] private Material _skyboxMaterial;
-    [SerializeField] private Light _sunLight;
+    [SerializeField] private Material         _skyboxMaterial;
+    [SerializeField] private Light            _sunLight;
 
     private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new();
     private NetworkRunner _runner;
+
+    private bool _fireLatch;
+    private bool _reloadLatch;
 
     async void StartGame(GameMode mode)
     {
@@ -27,22 +30,33 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
         await _runner.StartGame(new StartGameArgs()
         {
-            GameMode = mode,
-            SessionName = "TestRoom",
-            Scene = scene,
+            GameMode     = mode,
+            SessionName  = "TestRoom",
+            Scene        = scene,
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>(),
-            PlayerCount = 10
+            PlayerCount  = 10
         });
+    }
+
+    private void Update()
+    {
+        var mouse    = Mouse.current;
+        var keyboard = Keyboard.current;
+
+        // Only latch on the first frame of the click
+        if (mouse != null && mouse.leftButton.wasPressedThisFrame)
+            _fireLatch = true;
+
+        if (keyboard != null && keyboard.rKey.wasPressedThisFrame)
+            _reloadLatch = true;
     }
 
     private void OnGUI()
     {
         if (_runner == null)
         {
-            if (GUI.Button(new Rect(0, 0, 200, 40), "Host"))
-                StartGame(GameMode.Host);
-            if (GUI.Button(new Rect(0, 40, 200, 40), "Join"))
-                StartGame(GameMode.Client);
+            if (GUI.Button(new Rect(0,  0, 200, 40), "Host")) StartGame(GameMode.Host);
+            if (GUI.Button(new Rect(0, 40, 200, 40), "Join")) StartGame(GameMode.Client);
         }
         else
         {
@@ -79,9 +93,10 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (PlayerMovement.Local == null) return;
 
-        var data = new NetworkInputData();
-
+        var data     = new NetworkInputData();
         var keyboard = Keyboard.current;
+        var mouse    = Mouse.current;
+
         if (keyboard != null)
         {
             Vector2 dir = Vector2.zero;
@@ -98,10 +113,19 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
         data.Pitch = FPSCamera.Local != null ? FPSCamera.Local.LocalCameraX : 0f;
 
         data.Buttons.Set(InputButtons.Jump, PlayerMovement.Local.JumpPending);
+        PlayerMovement.Local.JumpPending = false;
+
+        // isPressed keeps automatic weapons firing every tick while held.
+        // _fireLatch captures the initial click so justPressed works in PlayerMovement.
+        bool fireHeld = mouse != null && mouse.leftButton.isPressed;
+        
+        data.Buttons.Set(InputButtons.Fire, fireHeld || _fireLatch);
+        _fireLatch = false;
+
+        data.Buttons.Set(InputButtons.Reload, _reloadLatch);
+        _reloadLatch = false;
 
         input.Set(data);
-
-        PlayerMovement.Local.JumpPending = false;
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
@@ -116,12 +140,8 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        if (_skyboxMaterial != null)
-            RenderSettings.skybox = _skyboxMaterial;
-
-        if (_sunLight != null)
-            RenderSettings.sun = _sunLight;
-
+        if (_skyboxMaterial != null) RenderSettings.skybox = _skyboxMaterial;
+        if (_sunLight != null)       RenderSettings.sun    = _sunLight;
         DynamicGI.UpdateEnvironment();
     }
     public void OnSceneLoadStart(NetworkRunner runner) { }
